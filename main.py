@@ -78,6 +78,7 @@ def draw_table(data, title):
   
 
 def main():
+    load_dotenv()
     URL_hh = "https://api.hh.ru"
     URL_sj = "https://api.superjob.ru/2.0/vacancies"
     params_hh = {
@@ -228,5 +229,4 @@ def main():
 
 
 if __name__ == "__main__":
-    load_dotenv()
     main()
