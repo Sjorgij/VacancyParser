@@ -79,8 +79,8 @@ def draw_table(data, title):
 
 def main():
     load_dotenv()
-    URL_hh = "https://api.hh.ru"
-    URL_sj = "https://api.superjob.ru/2.0/vacancies"
+    url_hh = "https://api.hh.ru"
+    url_sj = "https://api.superjob.ru/2.0/vacancies"
     params_hh = {
         "area": "1",
         "professional_role": "96",
@@ -221,8 +221,8 @@ def main():
         }
     }
   
-    parse_vacs_hh(URL_hh, params_hh, vac_info_hh)
-    parse_vacs_sj(URL_sj, header, params_sj, vac_info_sj)
+    parse_vacs_hh(url_hh, params_hh, vac_info_hh)
+    parse_vacs_sj(url_sj, header, params_sj, vac_info_sj)
 
     draw_table(vac_info_hh, "HeadHunter Moscow")
     draw_table(vac_info_sj, "SuperJob Moscow")
