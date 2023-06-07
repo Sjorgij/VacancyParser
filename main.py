@@ -81,15 +81,19 @@ def main():
     load_dotenv()
     url_hh = "https://api.hh.ru"
     url_sj = "https://api.superjob.ru/2.0/vacancies"
+    hh_moscow_id = 1
+    hh_programmer_role_id = 96
+    days_in_one_month = 31
+    sj_programmer_catalogue_id = 48
     params_hh = {
-        "area": "1",
-        "professional_role": "96",
+        "area": hh_moscow_id,
+        "professional_role": hh_programmer_role_id,
         "only_with_salary": True,
-        "period": 31
+        "period": days_in_one_month
     }
     params_sj = {
         "town": "Москва",
-        "catalogues": 48,
+        "catalogues": sj_programmer_catalogue_id,
         "page": 0
     }
     header = {
