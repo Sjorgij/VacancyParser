@@ -14,29 +14,28 @@ def count_vac(name, salary, vac_info):
 
 
 def request_vacs_hh(url, params, vac_info):
-    response = requests.get(f"{url}/vacancies", params=params)
-    response.raise_for_status()
-    pages = response.json()["pages"]
-    for page in range(pages):
-        params["page"] = page
+    pages = 1
+    while page < pages:
         response = requests.get(f"{url}/vacancies", params=params)
         response.raise_for_status()
-        response = response.json()["items"]
-        for vacancy in response:
-            count_vac(vacancy["name"], predict_rub_salary_hh(vacancy["salary"]), vac_info)  
+        response = response.json()
+        pages = response["pages"]
+        params["page"] += 1
+        response = response["items"]
+            for vacancy in response:
+                count_vac(vacancy["name"], predict_rub_salary_hh(vacancy["salary"]), vac_info)  
 
 
 def request_vacs_sj(url, header, params, vac_info):
-    response = requests.get(url, headers = header, params=params)
-    response.raise_for_status()
-    response = response.json()
-    while response["more"]:
+    more = True
+    while more:
         response = requests.get(url, headers = header, params=params)
         response.raise_for_status()
         response = response.json()
         for vacancy in response["objects"]:
             count_vac(vacancy["profession"], predict_rub_salary_sj(vacancy), vac_info)
-        params["page"] += 1  
+        params["page"] += 1
+        more = response["more"]
     
 
 def predict_rub_salary_hh(vacancy):
@@ -92,7 +91,8 @@ def main():
         "area": hh_moscow_id,
         "professional_role": hh_programmer_role_id,
         "only_with_salary": True,
-        "period": days_in_one_month
+        "period": days_in_one_month,
+        "page": 0
     }
     params_sj = {
         "town": "Москва",
