@@ -16,21 +16,25 @@ def count_vac(name, salary, vac_info):
 def request_vacs_hh(url, params, vac_info):
     response = requests.get(f"{url}/vacancies", params=params)
     response.raise_for_status()
-    for page in range(response.json()["pages"]):
+    pages = response.json()["pages"]
+    for page in range(pages):
         params["page"] = page
         response = requests.get(f"{url}/vacancies", params=params)
         response.raise_for_status()
-        for vacancy in response.json()["items"]:
+        response = response.json()["items"]
+        for vacancy in response:
             count_vac(vacancy["name"], predict_rub_salary_hh(vacancy["salary"]), vac_info)  
 
 
 def request_vacs_sj(url, header, params, vac_info):
     response = requests.get(url, headers = header, params=params)
     response.raise_for_status()
-    while response.json()["more"]:
+    response = response.json()
+    while response["more"]:
         response = requests.get(url, headers = header, params=params)
         response.raise_for_status()
-        for vacancy in response.json()["objects"]:
+        response = response.json()
+        for vacancy in response["objects"]:
             count_vac(vacancy["profession"], predict_rub_salary_sj(vacancy), vac_info)
         params["page"] += 1  
     
