@@ -4,7 +4,7 @@ from dotenv import load_dotenv
 from terminaltables import AsciiTable
   
 
-def count_vacs(name, salary, vac_info):
+def count_vac(name, salary, vac_info):
     for vac in vac_info.keys():
         if vac.lower() in name.lower():
             vac_info[vac]["vacancies_found"] += 1
@@ -13,7 +13,7 @@ def count_vacs(name, salary, vac_info):
                 vac_info[vac]["vacancies_processed"] += 1
 
 
-def parse_vacs_hh(url, params, vac_info):
+def request_vacs_hh(url, params, vac_info):
     response = requests.get(f"{url}/vacancies", params=params)
     response.raise_for_status()
     for page in range(response.json()["pages"]):
@@ -21,24 +21,18 @@ def parse_vacs_hh(url, params, vac_info):
         response = requests.get(f"{url}/vacancies", params=params)
         response.raise_for_status()
         for vacancy in response.json()["items"]:
-            count_vacs(vacancy["name"], predict_rub_salary_hh(vacancy["salary"]), vac_info)
-    for vac in vac_info:
-        if vac_info[vac]["average_salary"] == 0: continue
-        vac_info[vac]["average_salary"] = int(vac_info[vac]["average_salary"] / vac_info[vac]["vacancies_processed"])  
+            count_vac(vacancy["name"], predict_rub_salary_hh(vacancy["salary"]), vac_info)  
 
 
-def parse_vacs_sj(url, header, params, vac_info):
+def request_vacs_sj(url, header, params, vac_info):
     response = requests.get(url, headers = header, params=params)
     response.raise_for_status()
     while response.json()["more"]:
         response = requests.get(url, headers = header, params=params)
         response.raise_for_status()
         for vacancy in response.json()["objects"]:
-            count_vacs(vacancy["profession"], predict_rub_salary_sj(vacancy), vac_info)
-        params["page"] += 1
-    for vac in vac_info:
-        if vac_info[vac]["average_salary"] == 0: continue
-        vac_info[vac]["average_salary"] = int(vac_info[vac]["average_salary"] / vac_info[vac]["vacancies_processed"])  
+            count_vac(vacancy["profession"], predict_rub_salary_sj(vacancy), vac_info)
+        params["page"] += 1  
     
 
 def predict_rub_salary_hh(vacancy):
@@ -75,7 +69,12 @@ def draw_table(data, title):
         result.append([lang, *list(data[lang].values())])
     print(AsciiTable(result, title).table)
 
-  
+
+def coun_avg_salary(vac_info):
+    for language in vac_info:
+        if vac_info[language]["average_salary"] == 0: continue
+        vac_info[language]["average_salary"] = int(vac_info[language]["average_salary"] / vac_info[language]["vacancies_processed"])
+
 
 def main():
     load_dotenv()
@@ -124,8 +123,11 @@ def main():
         vac_info_hh[lang] = vac_info.copy()
         vac_info_sj[lang] = vac_info.copy()
   
-    parse_vacs_hh(url_hh, params_hh, vac_info_hh)
-    parse_vacs_sj(url_sj, header, params_sj, vac_info_sj)
+    request_vacs_hh(url_hh, params_hh, vac_info_hh)
+    request_vacs_sj(url_sj, header, params_sj, vac_info_sj)
+
+    count_avg_salary(vac_info_hh)
+    count_avg_salary(vac_info_sj)
 
     draw_table(vac_info_hh, "HeadHunter Moscow")
     draw_table(vac_info_sj, "SuperJob Moscow")
