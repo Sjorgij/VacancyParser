@@ -99,131 +99,30 @@ def main():
     header = {
         "X-Api-App-Id": os.environ["SUPERJOB_API_TOKEN"]
     }
-    vac_info_hh = {
-        "JavaScript": {
-            "vacancies_found": 0,
-            "vacancies_processed": 0,
-            "average_salary": 0
-        },
-        "Python": {
-            "vacancies_found": 0,
-            "vacancies_processed": 0,
-            "average_salary": 0
-        },
-        "Java": {
-            "vacancies_found": 0,
-            "vacancies_processed": 0,
-            "average_salary": 0
-        },
-        "C/С++": {
-            "vacancies_found": 0,
-            "vacancies_processed": 0,
-            "average_salary": 0
-        },
-        "PHP": {
-            "vacancies_found": 0,
-            "vacancies_processed": 0,
-            "average_salary": 0
-        },
-        "C#": {
-            "vacancies_found": 0,
-            "vacancies_processed": 0,
-            "average_salary": 0
-        },
-        "Swift": {
-            "vacancies_found": 0,
-            "vacancies_processed": 0,
-            "average_salary": 0
-        },
-        "Kotlin": {
-            "vacancies_found": 0,
-            "vacancies_processed": 0,
-            "average_salary": 0
-        },
-        "Go": {
-            "vacancies_found": 0,
-            "vacancies_processed": 0,
-            "average_salary": 0
-        },
-        "Ruby": {
-            "vacancies_found": 0,
-            "vacancies_processed": 0,
-            "average_salary": 0
-        },
-        "Rust": {
-            "vacancies_found": 0,
-            "vacancies_processed": 0,
-            "average_salary": 0
-        },
-        "1с": {
-            "vacancies_found": 0,
-            "vacancies_processed": 0,
-            "average_salary": 0
-        }
+    languages = (
+        "JavaScript", 
+        "Python", 
+        "Java", 
+        "C/С++", 
+        "PHP", 
+        "C#", 
+        "Swift", 
+        "Kotlin", 
+        "Go", 
+        "Ruby", 
+        "Rust", 
+        "1с"
+    )
+    vac_info = {
+        "vacancies_found": 0,
+        "vacancies_processed": 0,
+        "average_salary": 0
     }
-
-    vac_info_sj = {
-        "JavaScript": {
-            "vacancies_found": 0,
-            "vacancies_processed": 0,
-            "average_salary": 0
-        },
-        "Python": {
-            "vacancies_found": 0,
-            "vacancies_processed": 0,
-            "average_salary": 0
-        },
-        "Java": {
-            "vacancies_found": 0,
-            "vacancies_processed": 0,
-            "average_salary": 0
-        },
-        "C/С++": {
-            "vacancies_found": 0,
-            "vacancies_processed": 0,
-            "average_salary": 0
-        },
-        "PHP": {
-            "vacancies_found": 0,
-            "vacancies_processed": 0,
-            "average_salary": 0
-        },
-        "C#": {
-            "vacancies_found": 0,
-            "vacancies_processed": 0,
-            "average_salary": 0
-        },
-        "Swift": {
-            "vacancies_found": 0,
-            "vacancies_processed": 0,
-            "average_salary": 0
-        },
-        "Kotlin": {
-            "vacancies_found": 0,
-            "vacancies_processed": 0,
-            "average_salary": 0
-        },
-        "Go": {
-            "vacancies_found": 0,
-            "vacancies_processed": 0,
-            "average_salary": 0
-        },
-        "Ruby": {
-            "vacancies_found": 0,
-            "vacancies_processed": 0,
-            "average_salary": 0
-        },
-        "Rust": {
-            "vacancies_found": 0,
-            "vacancies_processed": 0,
-            "average_salary": 0
-        },
-        "1с": {
-            "vacancies_found": 0,
-            "vacancies_processed": 0,
-            "average_salary": 0
-        }
-    }
+    vac_info_hh = dict()
+    vac_info_sj = dict()
+    for lang in languages:
+        vac_info_hh[lang] = vac_info.copy()
+        vac_info_sj[lang] = vac_info.copy()
   
     parse_vacs_hh(url_hh, params_hh, vac_info_hh)
     parse_vacs_sj(url_sj, header, params_sj, vac_info_sj)
