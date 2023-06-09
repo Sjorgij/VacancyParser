@@ -39,13 +39,15 @@ def request_vacs_sj(url, header, params, vac_info):
     
 
 def predict_rub_salary_hh(vacancy):
-    if vacancy["currency"] != "RUR": return None
+    if vacancy["currency"] != "RUR":
+        return None
     salary = predict_rub_salary(vacancy["from"], vacancy["to"])
     return salary
 
 
 def predict_rub_salary_sj(vacancy):
-    if vacancy["currency"] != "rub": return None
+    if vacancy["currency"] != "rub":
+        return None
     salary = predict_rub_salary(vacancy["payment_from"], vacancy["payment_to"])
     return salary
 
@@ -59,8 +61,8 @@ def predict_rub_salary(salary_from, salary_to):
         return salary_to * 0.8
 
 
-def draw_table(data, title):
-    result = [
+def draw_table(table_data, title):
+    table = [
         [
             "Язык программирования",
             "Вакансий найдено",
@@ -68,9 +70,9 @@ def draw_table(data, title):
             "Средняя зарплата"
         ]
     ]
-    for lang in data.keys():
-        result.append([lang, *list(data[lang].values())])
-    print(AsciiTable(result, title).table)
+    for lang in table_data.keys():
+        table.append([lang, *list(table_data[lang].values())])
+    print(AsciiTable(table, title).table)
 
 
 def coun_avg_salary(vac_info):
