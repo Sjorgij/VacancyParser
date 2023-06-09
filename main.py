@@ -2,18 +2,10 @@ import os
 import requests
 from dotenv import load_dotenv
 from terminaltables import AsciiTable
-  
-
-def count_vac(name, salary, vac_info):
-    for vac in vac_info.keys():
-        if vac.lower() in name.lower():
-            vac_info[vac]["vacancies_found"] += 1
-            if salary:
-                vac_info[vac]["average_salary"] += int(salary)
-                vac_info[vac]["vacancies_processed"] += 1
 
 
-def request_vacs_hh(url, params, vac_info):
+def request_vacs_hh(url, params, language, language_info):
+    params["text"] = language
     pages = 1
     while page < pages:
         response = requests.get(f"{url}/vacancies", params=params)
@@ -23,19 +15,34 @@ def request_vacs_hh(url, params, vac_info):
         params["page"] += 1
         response = response["items"]
             for vacancy in response:
-                count_vac(vacancy["name"], predict_rub_salary_hh(vacancy["salary"]), vac_info)  
+                language_info["vacancies_found"] += 1
+                salary = predict_rub_salary_hh(vacancy["salary"])
+                if salary:
+                    language_info["vacancies_processed"] += 1
+                    language_info["average_salary"] += salary
+    if language_info["vacancies_processed"]:
+        language_info["average_salary"] /= language_info["vacancies_processed"]
+    return language_info.copy()
 
 
-def request_vacs_sj(url, header, params, vac_info):
+def request_vacs_sj(url, header, params, language, language_info):
+    params["keyword"] = language
     more = True
     while more:
         response = requests.get(url, headers = header, params=params)
         response.raise_for_status()
         response = response.json()
         for vacancy in response["objects"]:
-            count_vac(vacancy["profession"], predict_rub_salary_sj(vacancy), vac_info)
+            language_info["vacancies_found"] += 1
+            salary = predict_rub_salary_sj(vacancy)
+            if salary:
+                language_info["vacancies_processed"] += 1
+                language_info["average_salary"] += salary
         params["page"] += 1
         more = response["more"]
+    if language_info["vacancies_processed"]:
+        language_info["average_salary"] /= language_info["vacancies_processed"]
+    return language_info.copy()
     
 
 def predict_rub_salary_hh(vacancy):
@@ -75,12 +82,6 @@ def draw_table(table_data, title):
     print(AsciiTable(table, title).table)
 
 
-def coun_avg_salary(vac_info):
-    for language in vac_info:
-        if vac_info[language]["average_salary"] == 0: continue
-        vac_info[language]["average_salary"] = int(vac_info[language]["average_salary"] / vac_info[language]["vacancies_processed"])
-
-
 def main():
     load_dotenv()
     url_hh = "https://api.hh.ru"
@@ -118,7 +119,7 @@ def main():
         "Rust", 
         "1с"
     )
-    vac_info = {
+    language_info = {
         "vacancies_found": 0,
         "vacancies_processed": 0,
         "average_salary": 0
@@ -126,14 +127,8 @@ def main():
     vac_info_hh = dict()
     vac_info_sj = dict()
     for lang in languages:
-        vac_info_hh[lang] = vac_info.copy()
-        vac_info_sj[lang] = vac_info.copy()
-  
-    request_vacs_hh(url_hh, params_hh, vac_info_hh)
-    request_vacs_sj(url_sj, header, params_sj, vac_info_sj)
-
-    count_avg_salary(vac_info_hh)
-    count_avg_salary(vac_info_sj)
+        vac_info_hh[lang] = request_vacs_hh(url_hh, params_hh, language, language_info.copy())
+        vac_info_sj[lang] = request_vacs_sj(url_sj, header, params_sj, language, language_info.copy())
 
     draw_table(vac_info_hh, "HeadHunter Moscow")
     draw_table(vac_info_sj, "SuperJob Moscow")
