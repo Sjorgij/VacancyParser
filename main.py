@@ -4,11 +4,25 @@ from dotenv import load_dotenv
 from terminaltables import AsciiTable
 
 
+def pass_captcha(response):
+    backurl = response.url
+    response = response.json()
+    if response["errors"][0]["value"] == "captcha_required":
+        print(f"Для продолжения работы программы необходимо пройти капчу. Ссылка:\n{response['errors'][0]['captcha_url']}&backurl={backurl}")
+        while True:
+            if "y" in input("Капча решена Yes/No\n").lower():
+                break
+    else:
+        raise ResponseError(response["errors"][0]["value"])
+
 def request_vacs_hh(url, params, language, language_info):
     params["text"] = language
     pages = 1
     while params["page"] < pages:
         response = requests.get(f"{url}/vacancies", params=params)
+        if response.status_code == 403:
+            pass_captcha(response)
+            continue
         response.raise_for_status()
         response = response.json()
         pages = response["pages"]
@@ -21,7 +35,7 @@ def request_vacs_hh(url, params, language, language_info):
                 language_info["vacancies_processed"] += 1
                 language_info["average_salary"] += salary
     if language_info["vacancies_processed"]:
-        language_info["average_salary"] /= language_info["vacancies_processed"]
+        language_info["average_salary"] = int(language_info["average_salary"] / language_info["vacancies_processed"])
     return language_info.copy()
 
 
@@ -41,7 +55,7 @@ def request_vacs_sj(url, header, params, language, language_info):
         params["page"] += 1
         more = response["more"]
     if language_info["vacancies_processed"]:
-        language_info["average_salary"] /= language_info["vacancies_processed"]
+        language_info["average_salary"] = int(language_info["average_salary"] / language_info["vacancies_processed"])
     return language_info.copy()
     
 
