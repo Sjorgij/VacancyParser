@@ -127,8 +127,8 @@ def main():
     vac_info_hh = dict()
     vac_info_sj = dict()
     for lang in languages:
-        vac_info_hh[lang] = request_vacs_hh(url_hh, params_hh, language, language_info.copy())
-        vac_info_sj[lang] = request_vacs_sj(url_sj, header, params_sj, language, language_info.copy())
+        vac_info_hh[lang] = request_vacs_hh(url_hh, params_hh, lang, language_info.copy())
+        vac_info_sj[lang] = request_vacs_sj(url_sj, header, params_sj, lang, language_info.copy())
 
     draw_table(vac_info_hh, "HeadHunter Moscow")
     draw_table(vac_info_sj, "SuperJob Moscow")
