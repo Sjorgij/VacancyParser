@@ -14,12 +14,12 @@ def request_vacs_hh(url, params, language, language_info):
         pages = response["pages"]
         params["page"] += 1
         response = response["items"]
-            for vacancy in response:
-                language_info["vacancies_found"] += 1
-                salary = predict_rub_salary_hh(vacancy["salary"])
-                if salary:
-                    language_info["vacancies_processed"] += 1
-                    language_info["average_salary"] += salary
+        for vacancy in response:
+            language_info["vacancies_found"] += 1
+            salary = predict_rub_salary_hh(vacancy["salary"])
+            if salary:
+                language_info["vacancies_processed"] += 1
+                language_info["average_salary"] += salary
     if language_info["vacancies_processed"]:
         language_info["average_salary"] /= language_info["vacancies_processed"]
     return language_info.copy()
