@@ -7,7 +7,7 @@ from terminaltables import AsciiTable
 def request_vacs_hh(url, params, language, language_info):
     params["text"] = language
     pages = 1
-    while page < pages:
+    while params["page"] < pages:
         response = requests.get(f"{url}/vacancies", params=params)
         response.raise_for_status()
         response = response.json()
@@ -127,8 +127,8 @@ def main():
     vac_info_hh = dict()
     vac_info_sj = dict()
     for lang in languages:
-        vac_info_hh[lang] = request_vacs_hh(url_hh, params_hh, lang, language_info.copy())
-        vac_info_sj[lang] = request_vacs_sj(url_sj, header, params_sj, lang, language_info.copy())
+        vac_info_hh[lang] = request_vacs_hh(url_hh, params_hh.copy(), lang, language_info.copy())
+        vac_info_sj[lang] = request_vacs_sj(url_sj, header, params_sj.copy(), lang, language_info.copy())
 
     draw_table(vac_info_hh, "HeadHunter Moscow")
     draw_table(vac_info_sj, "SuperJob Moscow")
