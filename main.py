@@ -15,7 +15,12 @@ def pass_captcha(response):
     else:
         raise ResponseError(response["errors"][0]["value"])
 
-def request_vacs_hh(url, params, language, language_info):
+def request_vacs_hh(url, params, language):
+    language_info = {
+        "vacancies_found": 0,
+        "vacancies_processed": 0,
+        "average_salary": 0
+    }
     params["text"] = language
     pages = 1
     while params["page"] < pages:
@@ -39,7 +44,12 @@ def request_vacs_hh(url, params, language, language_info):
     return language_info.copy()
 
 
-def request_vacs_sj(url, header, params, language, language_info):
+def request_vacs_sj(url, header, params, language):
+    language_info = {
+        "vacancies_found": 0,
+        "vacancies_processed": 0,
+        "average_salary": 0
+    }
     params["keyword"] = language
     more = True
     while more:
@@ -133,16 +143,12 @@ def main():
         "Rust", 
         "1с"
     )
-    language_info = {
-        "vacancies_found": 0,
-        "vacancies_processed": 0,
-        "average_salary": 0
-    }
+
     vac_info_hh = dict()
     vac_info_sj = dict()
     for lang in languages:
-        vac_info_hh[lang] = request_vacs_hh(url_hh, params_hh.copy(), lang, language_info.copy())
-        vac_info_sj[lang] = request_vacs_sj(url_sj, header, params_sj.copy(), lang, language_info.copy())
+        vac_info_hh[lang] = request_vacs_hh(url_hh, params_hh.copy(), lang)
+        vac_info_sj[lang] = request_vacs_sj(url_sj, header, params_sj.copy(), lang)
 
     draw_table(vac_info_hh, "HeadHunter Moscow")
     draw_table(vac_info_sj, "SuperJob Moscow")
