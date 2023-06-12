@@ -113,7 +113,7 @@ def draw_table(table_data, title):
     ]
     for lang in table_data.keys():
         table.append([lang, *list(table_data[lang].values())])
-    print(AsciiTable(table, title).table)
+    retrurn AsciiTable(table, title).table
 
 
 def main():
@@ -160,8 +160,8 @@ def main():
         vacancies_on_hh[lang] = fetch_vacancies_from_hh(url_hh, params_hh.copy(), lang)
         vacancies_on_sj[lang] = fetch_vacancies_from_sj(url_sj, header, params_sj.copy(), lang)
 
-    draw_table(vacancies_on_hh, "HeadHunter Moscow")
-    draw_table(vacancies_on_sj, "SuperJob Moscow")
+    print(draw_table(vacancies_on_hh, "HeadHunter Moscow"))
+    print(draw_table(vacancies_on_sj, "SuperJob Moscow"))
 
 
 if __name__ == "__main__":
