@@ -16,11 +16,9 @@ def pass_captcha(response):
         raise ResponseError(response["errors"][0]["value"])
 
 def fetch_vacancies_from_hh(url, params, language):
-    language_info = {
-        "vacancies_found": 0,
-        "vacancies_processed": 0,
-        "average_salary": 0
-    }
+    vacancies_found = 0
+    vacancies_processed = 0
+    total_salary = 0
     params["text"] = language
     pages = 1
     while params["page"] < pages:
@@ -34,22 +32,27 @@ def fetch_vacancies_from_hh(url, params, language):
         params["page"] += 1
         response = response["items"]
         for vacancy in response:
-            language_info["vacancies_found"] += 1
+            vacancies_found += 1
             salary = predict_rub_salary_hh(vacancy["salary"])
             if salary:
-                language_info["vacancies_processed"] += 1
-                language_info["average_salary"] += salary
-    if language_info["vacancies_processed"]:
-        language_info["average_salary"] = int(language_info["average_salary"] / language_info["vacancies_processed"])
+                vacancies_processed += 1
+                total_salary += salary
+    if vacancies_processed:
+        avg_salary = int(total_salary / vacancies_processed)
+    else:
+        avg_salary = 0
+    language_info = {
+        "vacancies_found": vacancies_found,
+        "vacancies_processed": vacancies_processed,
+        "average_salary": avg_salary
+    }
     return language_info.copy()
 
 
 def fetch_vacancies_from_sj(url, header, params, language):
-    language_info = {
-        "vacancies_found": 0,
-        "vacancies_processed": 0,
-        "average_salary": 0
-    }
+    vacancies_found = 0
+    vacancies_processed = 0
+    total_salary = 0
     params["keyword"] = language
     more = True
     while more:
@@ -57,15 +60,22 @@ def fetch_vacancies_from_sj(url, header, params, language):
         response.raise_for_status()
         response = response.json()
         for vacancy in response["objects"]:
-            language_info["vacancies_found"] += 1
+            vacancies_found += 1
             salary = predict_rub_salary_sj(vacancy)
             if salary:
-                language_info["vacancies_processed"] += 1
-                language_info["average_salary"] += salary
+                vacancies_processed += 1
+                total_salary += salary
         params["page"] += 1
         more = response["more"]
-    if language_info["vacancies_processed"]:
-        language_info["average_salary"] = int(language_info["average_salary"] / language_info["vacancies_processed"])
+    if vacancies_processed:
+        avg_salary = int(total_salary / vacancies_processed)
+    else:
+        avg_salary = 0
+    language_info = {
+        "vacancies_found": vacancies_found,
+        "vacancies_processed": vacancies_processed,
+        "average_salary": avg_salary
+    }
     return language_info.copy()
     
 
