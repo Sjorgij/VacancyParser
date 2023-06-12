@@ -144,14 +144,14 @@ def main():
         "1с"
     )
 
-    vac_info_hh = dict()
-    vac_info_sj = dict()
+    vacancies_on_hh = dict()
+    vacancies_on_sj = dict()
     for lang in languages:
-        vac_info_hh[lang] = request_vacs_hh(url_hh, params_hh.copy(), lang)
-        vac_info_sj[lang] = request_vacs_sj(url_sj, header, params_sj.copy(), lang)
+        vacancies_on_hh[lang] = request_vacs_hh(url_hh, params_hh.copy(), lang)
+        vacancies_on_sj[lang] = request_vacs_sj(url_sj, header, params_sj.copy(), lang)
 
-    draw_table(vac_info_hh, "HeadHunter Moscow")
-    draw_table(vac_info_sj, "SuperJob Moscow")
+    draw_table(vacancies_on_hh, "HeadHunter Moscow")
+    draw_table(vacancies_on_sj, "SuperJob Moscow")
 
 
 if __name__ == "__main__":
