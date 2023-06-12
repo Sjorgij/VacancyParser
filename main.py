@@ -15,7 +15,7 @@ def pass_captcha(response):
     else:
         raise ResponseError(response["errors"][0]["value"])
 
-def request_vacs_hh(url, params, language):
+def fetch_vacancies_from_hh(url, params, language):
     language_info = {
         "vacancies_found": 0,
         "vacancies_processed": 0,
@@ -44,7 +44,7 @@ def request_vacs_hh(url, params, language):
     return language_info.copy()
 
 
-def request_vacs_sj(url, header, params, language):
+def fetch_vacancies_from_sj(url, header, params, language):
     language_info = {
         "vacancies_found": 0,
         "vacancies_processed": 0,
@@ -147,8 +147,8 @@ def main():
     vacancies_on_hh = dict()
     vacancies_on_sj = dict()
     for lang in languages:
-        vacancies_on_hh[lang] = request_vacs_hh(url_hh, params_hh.copy(), lang)
-        vacancies_on_sj[lang] = request_vacs_sj(url_sj, header, params_sj.copy(), lang)
+        vacancies_on_hh[lang] = fetch_vacancies_from_hh(url_hh, params_hh.copy(), lang)
+        vacancies_on_sj[lang] = fetch_vacancies_from_sj(url_sj, header, params_sj.copy(), lang)
 
     draw_table(vacancies_on_hh, "HeadHunter Moscow")
     draw_table(vacancies_on_sj, "SuperJob Moscow")
