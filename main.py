@@ -13,7 +13,9 @@ def pass_captcha(response):
             if "y" in input("Капча решена Yes/No\n").lower():
                 break
     else:
+        from xmlrpc.client import ResponseError
         raise ResponseError(response["errors"][0]["value"])
+
 
 def fetch_vacancies_from_hh(url, params, language):
     vacancies_found = 0
@@ -41,12 +43,12 @@ def fetch_vacancies_from_hh(url, params, language):
         avg_salary = int(total_salary / vacancies_processed)
     else:
         avg_salary = 0
-    language_info = {
+    job_stats_by_language = {
         "vacancies_found": vacancies_found,
         "vacancies_processed": vacancies_processed,
         "average_salary": avg_salary
     }
-    return language_info.copy()
+    return job_stats_by_language.copy()
 
 
 def fetch_vacancies_from_sj(url, header, params, language):
@@ -56,7 +58,7 @@ def fetch_vacancies_from_sj(url, header, params, language):
     params["keyword"] = language
     more = True
     while more:
-        response = requests.get(url, headers = header, params=params)
+        response = requests.get(url, headers=header, params=params)
         response.raise_for_status()
         response = response.json()
         for vacancy in response["objects"]:
@@ -71,13 +73,13 @@ def fetch_vacancies_from_sj(url, header, params, language):
         avg_salary = int(total_salary / vacancies_processed)
     else:
         avg_salary = 0
-    language_info = {
+    job_stats_by_language = {
         "vacancies_found": vacancies_found,
         "vacancies_processed": vacancies_processed,
         "average_salary": avg_salary
     }
-    return language_info.copy()
-    
+    return job_stats_by_language.copy()
+
 
 def predict_rub_salary_hh(vacancy):
     if vacancy["currency"] != "RUR":
@@ -95,14 +97,14 @@ def predict_rub_salary_sj(vacancy):
 
 def predict_rub_salary(salary_from, salary_to):
     if salary_from and salary_to:
-        return (salary_from + salary_to)/2
+        return (salary_from + salary_to) / 2
     elif salary_from:
         return salary_from * 1.2
     else:
         return salary_to * 0.8
 
 
-def draw_table(table_data, title):
+def draw_table(jobs_table, title):
     table = [
         [
             "Язык программирования",
@@ -111,9 +113,9 @@ def draw_table(table_data, title):
             "Средняя зарплата"
         ]
     ]
-    for lang in table_data.keys():
-        table.append([lang, *list(table_data[lang].values())])
-    retrurn AsciiTable(table, title).table
+    for lang in jobs_table.keys():
+        table.append([lang, *list(jobs_table[lang].values())])
+    return AsciiTable(table, title).table
 
 
 def main():
@@ -140,17 +142,17 @@ def main():
         "X-Api-App-Id": os.environ["SUPERJOB_API_TOKEN"]
     }
     languages = (
-        "JavaScript", 
-        "Python", 
-        "Java", 
-        "C/С++", 
-        "PHP", 
-        "C#", 
-        "Swift", 
-        "Kotlin", 
-        "Go", 
-        "Ruby", 
-        "Rust", 
+        "JavaScript",
+        "Python",
+        "Java",
+        "C/С++",
+        "PHP",
+        "C#",
+        "Swift",
+        "Kotlin",
+        "Go",
+        "Ruby",
+        "Rust",
         "1с"
     )
 
